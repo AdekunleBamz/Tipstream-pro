@@ -1,0 +1,127 @@
+export const SubscriptionManagerABI = [
+  { inputs: [], stateMutability: "nonpayable", type: "constructor" },
+  { inputs: [], name: "InactivePlan", type: "error" },
+  { inputs: [], name: "InvalidPayment", type: "error" },
+  { inputs: [], name: "NotOwner", type: "error" },
+  { inputs: [], name: "TransferFailed", type: "error" },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: "address", name: "user", type: "address" },
+      { indexed: true, internalType: "address", name: "creator", type: "address" },
+      { indexed: false, internalType: "uint256", name: "planId", type: "uint256" },
+    ],
+    name: "Cancelled",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: "address", name: "user", type: "address" },
+      { indexed: true, internalType: "address", name: "creator", type: "address" },
+      { indexed: false, internalType: "uint256", name: "planId", type: "uint256" },
+      { indexed: false, internalType: "uint256", name: "amount", type: "uint256" },
+      { indexed: false, internalType: "uint256", name: "expiresAt", type: "uint256" },
+    ],
+    name: "Renewed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: "address", name: "user", type: "address" },
+      { indexed: true, internalType: "address", name: "creator", type: "address" },
+      { indexed: false, internalType: "uint256", name: "planId", type: "uint256" },
+      { indexed: false, internalType: "uint256", name: "amount", type: "uint256" },
+      { indexed: false, internalType: "uint256", name: "expiresAt", type: "uint256" },
+    ],
+    name: "Subscribed",
+    type: "event",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "creator", type: "address" },
+      { internalType: "uint256", name: "planId", type: "uint256" },
+    ],
+    name: "cancel",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "user", type: "address" },
+      { internalType: "address", name: "creator", type: "address" },
+      { internalType: "uint256", name: "planId", type: "uint256" },
+    ],
+    name: "isActive",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "owner",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "", type: "address" },
+      { internalType: "uint256", name: "", type: "uint256" },
+    ],
+    name: "plans",
+    outputs: [
+      { internalType: "uint256", name: "price", type: "uint256" },
+      { internalType: "uint256", name: "period", type: "uint256" },
+      { internalType: "bool", name: "active", type: "bool" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "creator", type: "address" },
+      { internalType: "uint256", name: "planId", type: "uint256" },
+    ],
+    name: "renew",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "creator", type: "address" },
+      { internalType: "uint256", name: "planId", type: "uint256" },
+      { internalType: "uint256", name: "price", type: "uint256" },
+      { internalType: "uint256", name: "period", type: "uint256" },
+      { internalType: "bool", name: "active", type: "bool" },
+    ],
+    name: "setPlan",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "creator", type: "address" },
+      { internalType: "uint256", name: "planId", type: "uint256" },
+    ],
+    name: "subscribe",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "", type: "address" },
+      { internalType: "address", name: "", type: "address" },
+      { internalType: "uint256", name: "", type: "uint256" },
+    ],
+    name: "subs",
+    outputs: [{ internalType: "uint256", name: "expiresAt", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const;
