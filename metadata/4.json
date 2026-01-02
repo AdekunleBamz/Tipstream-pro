@@ -1,0 +1,11 @@
+{
+  "name": "Tip Receipt #4",
+  "description": "Receipt for a tip on TipStream Pro - Stream Tips, Stack Stats, Surge Rankings",
+  "image": "https://adekunlebamz.github.io/Tipstream-pro/images/receipt.svg",
+  "attributes": [
+    { "trait_type": "Tip Amount (wei)", "value": "4000000000000000" },
+    { "trait_type": "Note", "value": "You rock!" },
+    { "trait_type": "Platform", "value": "TipStream Pro" },
+    { "trait_type": "Chain", "value": "Base" }
+  ]
+}
