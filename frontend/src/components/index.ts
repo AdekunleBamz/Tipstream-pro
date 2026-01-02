@@ -7,3 +7,6 @@ export { NFTGallery } from "./NFTGallery";
 export { HeroSection } from "./HeroSection";
 export { StatsCards } from "./StatsCards";
 export { Footer } from "./Footer";
+export { LoadingSpinner } from "./LoadingSpinner";
+export { ErrorMessage } from "./ErrorMessage";
+export { SuccessMessage } from "./SuccessMessage";
