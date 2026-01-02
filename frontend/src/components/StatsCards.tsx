@@ -1,14 +1,16 @@
 "use client";
 
 import { useReadContract, useAccount, useBalance } from "wagmi";
+import { base } from "wagmi/chains";
 import { CONTRACTS } from "@/config/contracts";
 import { TipStreamABI, TipNFTABI } from "@/config/abis";
 
 export function StatsCards() {
   const { address, isConnected } = useAccount();
   
-  const { data: balanceData } = useBalance({
+  const { data: balanceData, isLoading: balanceLoading } = useBalance({
     address: address,
+    chainId: base.id,
   });
 
   const { data: fee } = useReadContract({
@@ -25,9 +27,16 @@ export function StatsCards() {
 
   const totalTips = Number(nextId || 1) - 1;
   const feeInEth = fee ? Number(fee) / 1e18 : 0.0001;
-  const walletBalance = balanceData?.formatted 
-    ? parseFloat(balanceData.formatted).toFixed(4) 
-    : "0.0000";
+  
+  const getBalanceDisplay = () => {
+    if (!isConnected) return "—";
+    if (balanceLoading) return "...";
+    if (balanceData?.value) {
+      const ethValue = Number(balanceData.value) / 1e18;
+      return ethValue.toFixed(4);
+    }
+    return "0.0000";
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -35,7 +44,7 @@ export function StatsCards() {
       <div className="bg-gradient-to-br from-green-900/50 to-green-800/50 border border-green-500/30 rounded-xl p-6">
         <div className="text-sm text-green-300 mb-1">Your Balance</div>
         <div className="text-3xl font-bold text-white">
-          {isConnected ? walletBalance : "—"}
+          {getBalanceDisplay()}
         </div>
         <div className="text-xs text-green-400 mt-1">
           {isConnected ? "ETH on Base" : "Connect wallet"}
