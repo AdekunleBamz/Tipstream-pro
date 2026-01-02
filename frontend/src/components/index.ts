@@ -10,3 +10,6 @@ export { Footer } from "./Footer";
 export { LoadingSpinner } from "./LoadingSpinner";
 export { ErrorMessage } from "./ErrorMessage";
 export { SuccessMessage } from "./SuccessMessage";
+export { TransactionHistory } from "./TransactionHistory";
+export { FeatureCard } from "./FeatureCard";
+export { FeaturesSection } from "./FeaturesSection";
