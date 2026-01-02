@@ -16,6 +16,19 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "TipStream Pro | Micro-Tipping for Creators",
   description: "Stream Tips, Stack Stats, Surge Rankings - The ultimate micro-tipping platform for Farcaster creators on Base Chain",
+  keywords: ["tipping", "creators", "farcaster", "base", "blockchain", "nft", "web3"],
+  authors: [{ name: "TipStream Pro" }],
+  openGraph: {
+    title: "TipStream Pro",
+    description: "The ultimate micro-tipping platform for Farcaster creators",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TipStream Pro",
+    description: "The ultimate micro-tipping platform for Farcaster creators",
+  },
 };
 
 export default function RootLayout({
