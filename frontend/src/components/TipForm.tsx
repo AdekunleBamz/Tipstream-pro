@@ -135,7 +135,11 @@ export function TipForm() {
       {/* Error Message */}
       {error && (
         <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-center">
-          ❌ {error.message}
+          ❌ {error.message.includes('User rejected') || error.message.includes('rejected')
+            ? 'Transaction cancelled'
+            : error.message.includes('insufficient')
+            ? 'Insufficient balance'
+            : 'Transaction failed. Please try again.'}
         </div>
       )}
     </form>

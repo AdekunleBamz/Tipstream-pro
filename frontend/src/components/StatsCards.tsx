@@ -1,20 +1,20 @@
 "use client";
 
-import { useReadContract } from "wagmi";
+import { useReadContract, useAccount, useBalance } from "wagmi";
 import { CONTRACTS } from "@/config/contracts";
-import { TipStreamABI, TipNFTABI, SubscriptionManagerABI } from "@/config/abis";
+import { TipStreamABI, TipNFTABI } from "@/config/abis";
 
 export function StatsCards() {
+  const { address, isConnected } = useAccount();
+  
+  const { data: balanceData } = useBalance({
+    address: address,
+  });
+
   const { data: fee } = useReadContract({
     address: CONTRACTS.TipStream,
     abi: TipStreamABI,
     functionName: "fee",
-  });
-
-  const { data: treasury } = useReadContract({
-    address: CONTRACTS.TipStream,
-    abi: TipStreamABI,
-    functionName: "treasury",
   });
 
   const { data: nextId } = useReadContract({
@@ -25,9 +25,23 @@ export function StatsCards() {
 
   const totalTips = Number(nextId || 1) - 1;
   const feeInEth = fee ? Number(fee) / 1e18 : 0.0001;
+  const walletBalance = balanceData?.formatted 
+    ? parseFloat(balanceData.formatted).toFixed(4) 
+    : "0.0000";
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      {/* Wallet Balance */}
+      <div className="bg-gradient-to-br from-green-900/50 to-green-800/50 border border-green-500/30 rounded-xl p-6">
+        <div className="text-sm text-green-300 mb-1">Your Balance</div>
+        <div className="text-3xl font-bold text-white">
+          {isConnected ? walletBalance : "—"}
+        </div>
+        <div className="text-xs text-green-400 mt-1">
+          {isConnected ? "ETH on Base" : "Connect wallet"}
+        </div>
+      </div>
+
       <div className="bg-gradient-to-br from-purple-900/50 to-purple-800/50 border border-purple-500/30 rounded-xl p-6">
         <div className="text-sm text-purple-300 mb-1">Total Tips Sent</div>
         <div className="text-3xl font-bold text-white">{totalTips}</div>
@@ -41,11 +55,9 @@ export function StatsCards() {
       </div>
 
       <div className="bg-gradient-to-br from-blue-900/50 to-blue-800/50 border border-blue-500/30 rounded-xl p-6">
-        <div className="text-sm text-blue-300 mb-1">Treasury</div>
-        <div className="text-lg font-mono text-white truncate">
-          {treasury ? `${treasury.slice(0, 6)}...${treasury.slice(-4)}` : "Loading..."}
-        </div>
-        <div className="text-xs text-blue-400 mt-1">Fee collection address</div>
+        <div className="text-sm text-blue-300 mb-1">Network</div>
+        <div className="text-2xl font-bold text-white">Base</div>
+        <div className="text-xs text-blue-400 mt-1">Mainnet</div>
       </div>
     </div>
   );
