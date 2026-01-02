@@ -18,9 +18,9 @@ A Micro-Tipping & Content Monetization Platform for Farcaster creators with ultr
 | Contract | Address | Status |
 |----------|---------|--------|
 | TipStream | `0x9FB4486fD78aB583f091958E331b7A805c5775d4` | ✅ Deployed |
-| SubscriptionManager | `<ADD_ADDRESS>` | ✅ Deployed |
-| TipNFT | `<ADD_ADDRESS>` | ⏳ Pending |
-| DailyCheckIn | `<ADD_ADDRESS>` | ⏳ Pending |
+| SubscriptionManager | `0xde57810A28652745446E4f188D30076c57D8C4d2` | ✅ Deployed |
+| TipNFT | `0x47b1E98c56A2a3Cd95722e25A118654Ddf93FED0` | ✅ Deployed |
+| DailyCheckIn | `0x30fa4DE1205AFDe0F00Cee051c5c3dA8Dc3C7Ef8` | ✅ Deployed |
 
 ## NFT Metadata
 
