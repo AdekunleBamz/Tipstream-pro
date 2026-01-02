@@ -2,7 +2,7 @@
 
 import { useWriteContract, useWaitForTransactionReceipt, useReadContract } from 'wagmi';
 import { parseEther } from 'viem';
-import { TIPSTREAM_ADDRESS, BASE_CHAIN_ID } from '@/config/contracts';
+import { CONTRACTS, BASE_CHAIN_ID, PLATFORM_FEE } from '@/config/contracts';
 import { TipStreamABI } from '@/config/abis';
 
 export function useTipStream() {
@@ -12,27 +12,6 @@ export function useTipStream() {
     hash,
   });
 
-  const { data: platformFee } = useReadContract({
-    address: TIPSTREAM_ADDRESS,
-    abi: TipStreamABI,
-    functionName: 'PLATFORM_FEE',
-    chainId: BASE_CHAIN_ID,
-  });
-
-  const { data: totalTips } = useReadContract({
-    address: TIPSTREAM_ADDRESS,
-    abi: TipStreamABI,
-    functionName: 'totalTips',
-    chainId: BASE_CHAIN_ID,
-  });
-
-  const { data: totalVolume } = useReadContract({
-    address: TIPSTREAM_ADDRESS,
-    abi: TipStreamABI,
-    functionName: 'totalVolume',
-    chainId: BASE_CHAIN_ID,
-  });
-
   const sendTip = async (
     recipient: `0x${string}`,
     amount: string,
@@ -40,11 +19,10 @@ export function useTipStream() {
     mintNft: boolean
   ) => {
     const tipAmount = parseEther(amount);
-    const fee = platformFee || parseEther('0.0001');
-    const totalValue = tipAmount + (fee as bigint);
+    const totalValue = tipAmount + PLATFORM_FEE;
 
     writeContract({
-      address: TIPSTREAM_ADDRESS,
+      address: CONTRACTS.TipStream,
       abi: TipStreamABI,
       functionName: 'tip',
       args: [recipient, note, mintNft],
@@ -59,8 +37,6 @@ export function useTipStream() {
     isSuccess,
     error,
     hash,
-    platformFee,
-    totalTips: totalTips as bigint | undefined,
-    totalVolume: totalVolume as bigint | undefined,
+    platformFee: PLATFORM_FEE,
   };
 }
