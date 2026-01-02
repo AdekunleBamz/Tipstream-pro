@@ -6,3 +6,4 @@ export { SubscriptionForm } from "./SubscriptionForm";
 export { NFTGallery } from "./NFTGallery";
 export { HeroSection } from "./HeroSection";
 export { StatsCards } from "./StatsCards";
+export { Footer } from "./Footer";
