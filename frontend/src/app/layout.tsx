@@ -34,19 +34,20 @@ export const metadata: Metadata = {
     images: ["https://tipstream-pro.vercel.app/og-image.png"],
   },
   other: {
-    "fc:frame": "vNext",
-    "fc:frame:image": "https://tipstream-pro.vercel.app/og-image.png",
-    "fc:frame:button:1": "💰 Send Tip",
-    "fc:frame:button:1:action": "link",
-    "fc:frame:button:1:target": "https://tipstream-pro.vercel.app/tip",
-    "fc:frame:button:2": "📊 Dashboard",
-    "fc:frame:button:2:action": "link",
-    "fc:frame:button:2:target": "https://tipstream-pro.vercel.app/dashboard",
-    "fc:frame:button:3": "✅ Check-In",
-    "fc:frame:button:3:action": "link",
-    "fc:frame:button:3:target": "https://tipstream-pro.vercel.app/checkin",
-    "fc:frame:button:4": "🚀 Open App",
-    "fc:frame:button:4:action": "launch_frame",
+    "fc:frame": JSON.stringify({
+      version: "next",
+      imageUrl: "https://tipstream-pro.vercel.app/og-image.png",
+      button: {
+        title: "💰 Send Tip",
+        action: {
+          type: "launch_frame",
+          name: "TipStream Pro",
+          url: "https://tipstream-pro.vercel.app/frame",
+          splashImageUrl: "https://tipstream-pro.vercel.app/splash.png",
+          splashBackgroundColor: "#111827"
+        }
+      }
+    }),
   },
 };
 
