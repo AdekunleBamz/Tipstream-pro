@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     images: [
       {
-        url: "https://tipstream-pro.vercel.app/api/og",
+        url: "https://tipstream-pro.vercel.app/og-image.png",
         width: 1200,
         height: 630,
         alt: "TipStream Pro",
@@ -31,11 +31,11 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "TipStream Pro",
     description: "The ultimate micro-tipping platform for Farcaster creators",
-    images: ["https://tipstream-pro.vercel.app/api/og"],
+    images: ["https://tipstream-pro.vercel.app/og-image.png"],
   },
   other: {
     "fc:frame": "vNext",
-    "fc:frame:image": "https://tipstream-pro.vercel.app/api/og",
+    "fc:frame:image": "https://tipstream-pro.vercel.app/og-image.png",
     "fc:frame:button:1": "💰 Send Tip",
     "fc:frame:button:1:action": "link",
     "fc:frame:button:1:target": "https://tipstream-pro.vercel.app/tip",

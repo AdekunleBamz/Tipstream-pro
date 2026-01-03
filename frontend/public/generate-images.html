@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Generate TipStream Images</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #111; color: white; }
+    canvas { border: 1px solid #333; margin: 10px 0; display: block; }
+    a { color: #a855f7; display: block; margin: 10px 0; }
+    h2 { margin-top: 30px; }
+  </style>
+</head>
+<body>
+<h1>TipStream Pro - Farcaster Images</h1>
+<p>Click each download link to save the PNG files, then move them to the public folder.</p>
+
+<h2>icon.png (200x200)</h2>
+<canvas id="icon" width="200" height="200"></canvas>
+
+<h2>splash.png (200x200)</h2>
+<canvas id="splash" width="200" height="200"></canvas>
+
+<h2>og-image.png (1200x630)</h2>
+<canvas id="og" width="1200" height="630"></canvas>
+
+<h2>cover.png (800x418)</h2>
+<canvas id="cover" width="800" height="418"></canvas>
+
+<script>
+// Icon - 200x200
+const iconCanvas = document.getElementById('icon');
+const iconCtx = iconCanvas.getContext('2d');
+const iconGrad = iconCtx.createLinearGradient(0, 0, 200, 200);
+iconGrad.addColorStop(0, '#a855f7');
+iconGrad.addColorStop(1, '#ec4899');
+iconCtx.fillStyle = iconGrad;
+iconCtx.beginPath();
+iconCtx.roundRect(0, 0, 200, 200, 40);
+iconCtx.fill();
+iconCtx.fillStyle = 'white';
+iconCtx.font = 'bold 100px Arial';
+iconCtx.textAlign = 'center';
+iconCtx.textBaseline = 'middle';
+iconCtx.fillText('Ξ', 100, 105);
+
+// Splash - 200x200
+const splashCanvas = document.getElementById('splash');
+const splashCtx = splashCanvas.getContext('2d');
+const splashGrad = splashCtx.createLinearGradient(0, 0, 200, 200);
+splashGrad.addColorStop(0, '#1f2937');
+splashGrad.addColorStop(1, '#111827');
+splashCtx.fillStyle = splashGrad;
+splashCtx.fillRect(0, 0, 200, 200);
+const innerGrad = splashCtx.createLinearGradient(50, 50, 150, 150);
+innerGrad.addColorStop(0, '#a855f7');
+innerGrad.addColorStop(1, '#ec4899');
+splashCtx.fillStyle = innerGrad;
+splashCtx.beginPath();
+splashCtx.roundRect(50, 50, 100, 100, 20);
+splashCtx.fill();
+splashCtx.fillStyle = 'white';
+splashCtx.font = 'bold 50px Arial';
+splashCtx.textAlign = 'center';
+splashCtx.textBaseline = 'middle';
+splashCtx.fillText('Ξ', 100, 105);
+
+// OG Image - 1200x630
+const ogCanvas = document.getElementById('og');
+const ogCtx = ogCanvas.getContext('2d');
+const ogGrad = ogCtx.createLinearGradient(0, 0, 1200, 630);
+ogGrad.addColorStop(0, '#1f2937');
+ogGrad.addColorStop(1, '#111827');
+ogCtx.fillStyle = ogGrad;
+ogCtx.fillRect(0, 0, 1200, 630);
+const logoGrad = ogCtx.createLinearGradient(500, 150, 700, 350);
+logoGrad.addColorStop(0, '#a855f7');
+logoGrad.addColorStop(1, '#ec4899');
+ogCtx.fillStyle = logoGrad;
+ogCtx.beginPath();
+ogCtx.roundRect(500, 150, 200, 200, 40);
+ogCtx.fill();
+ogCtx.fillStyle = 'white';
+ogCtx.font = 'bold 120px Arial';
+ogCtx.textAlign = 'center';
+ogCtx.textBaseline = 'middle';
+ogCtx.fillText('Ξ', 600, 260);
+ogCtx.font = 'bold 60px Arial';
+ogCtx.fillText('TipStream Pro', 600, 420);
+const textGrad = ogCtx.createLinearGradient(400, 480, 800, 480);
+textGrad.addColorStop(0, '#a855f7');
+textGrad.addColorStop(1, '#ec4899');
+ogCtx.fillStyle = '#a855f7';
+ogCtx.font = '30px Arial';
+ogCtx.fillText('Tip Creators on Base', 600, 500);
+
+// Cover - 800x418
+const coverCanvas = document.getElementById('cover');
+const coverCtx = coverCanvas.getContext('2d');
+const coverGrad = coverCtx.createLinearGradient(0, 0, 800, 418);
+coverGrad.addColorStop(0, '#1f2937');
+coverGrad.addColorStop(1, '#111827');
+coverCtx.fillStyle = coverGrad;
+coverCtx.fillRect(0, 0, 800, 418);
+const coverLogoGrad = coverCtx.createLinearGradient(320, 80, 480, 240);
+coverLogoGrad.addColorStop(0, '#a855f7');
+coverLogoGrad.addColorStop(1, '#ec4899');
+coverCtx.fillStyle = coverLogoGrad;
+coverCtx.beginPath();
+coverCtx.roundRect(320, 80, 160, 160, 32);
+coverCtx.fill();
+coverCtx.fillStyle = 'white';
+coverCtx.font = 'bold 90px Arial';
+coverCtx.textAlign = 'center';
+coverCtx.textBaseline = 'middle';
+coverCtx.fillText('Ξ', 400, 168);
+coverCtx.font = 'bold 48px Arial';
+coverCtx.fillText('TipStream Pro', 400, 300);
+coverCtx.font = '24px Arial';
+coverCtx.fillStyle = '#a855f7';
+coverCtx.fillText('Tip Creators on Base', 400, 360);
+
+// Create download links
+document.querySelectorAll('canvas').forEach(canvas => {
+  const link = document.createElement('a');
+  link.download = canvas.id + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.textContent = '⬇️ Download ' + canvas.id + '.png';
+  canvas.parentNode.insertBefore(link, canvas.nextSibling);
+});
+</script>
+</body>
+</html>

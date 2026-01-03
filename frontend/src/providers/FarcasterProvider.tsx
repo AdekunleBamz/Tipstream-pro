@@ -1,10 +1,13 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
-import sdk, { type FrameContext } from "@farcaster/frame-sdk";
+import sdk from "@farcaster/miniapp-sdk";
+
+// Define the context type based on what the SDK returns
+type FrameContextType = Awaited<typeof sdk.context>;
 
 interface FarcasterContextType {
-  context: FrameContext | null;
+  context: FrameContextType | null;
   isLoaded: boolean;
   isInFrame: boolean;
   sdk: typeof sdk;
@@ -30,7 +33,7 @@ export function useFarcaster() {
 }
 
 export function FarcasterProvider({ children }: { children: ReactNode }) {
-  const [context, setContext] = useState<FrameContext | null>(null);
+  const [context, setContext] = useState<FrameContextType | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInFrame, setIsInFrame] = useState(false);
   const [userFid, setUserFid] = useState<number | null>(null);
@@ -39,23 +42,21 @@ export function FarcasterProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const init = async () => {
       try {
-        const frameContext = await sdk.context;
-        
-        if (frameContext) {
-          setContext(frameContext);
-          setIsInFrame(true);
-          
-          // Extract user info
-          if (frameContext.user) {
-            setUserFid(frameContext.user.fid);
-            setUserName(frameContext.user.username || null);
-          }
-          
-          // Signal to Farcaster that the frame is ready
-          sdk.actions.ready();
+        const inMiniApp = await sdk.isInMiniApp();
+        setIsInFrame(inMiniApp);
+        if (!inMiniApp) return;
+
+        const miniAppContext = await sdk.context;
+        setContext(miniAppContext);
+
+        if (miniAppContext?.user) {
+          setUserFid(miniAppContext.user.fid);
+          setUserName(miniAppContext.user.username || null);
         }
+
+        await sdk.actions.ready();
       } catch (error) {
-        console.log("Not in Farcaster frame context");
+        console.log("Not in Farcaster miniapp context");
       } finally {
         setIsLoaded(true);
       }

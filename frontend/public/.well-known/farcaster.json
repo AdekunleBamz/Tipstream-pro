@@ -7,12 +7,24 @@
   "frame": {
     "version": "1",
     "name": "TipStream Pro",
-    "iconUrl": "https://tipstream-pro.vercel.app/api/og",
+    "iconUrl": "https://tipstream-pro.vercel.app/icon.png",
     "homeUrl": "https://tipstream-pro.vercel.app/frame",
-    "imageUrl": "https://tipstream-pro.vercel.app/api/og",
+    "imageUrl": "https://tipstream-pro.vercel.app/miniapp-image.png",
     "buttonTitle": "💰 Send Tip",
-    "splashImageUrl": "https://tipstream-pro.vercel.app/api/og",
-    "splashBackgroundColor": "#1a1a2e",
+    "splashImageUrl": "https://tipstream-pro.vercel.app/splash.png",
+    "splashBackgroundColor": "#111827",
     "webhookUrl": "https://tipstream-pro.vercel.app/api/webhook"
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "TipStream Pro",
+    "iconUrl": "https://tipstream-pro.vercel.app/icon.png",
+    "homeUrl": "https://tipstream-pro.vercel.app/frame",
+    "imageUrl": "https://tipstream-pro.vercel.app/miniapp-image.png",
+    "buttonTitle": "💰 Send Tip",
+    "splashImageUrl": "https://tipstream-pro.vercel.app/splash.png",
+    "splashBackgroundColor": "#111827",
+    "webhookUrl": "https://tipstream-pro.vercel.app/api/webhook",
+    "canonicalDomain": "tipstream-pro.vercel.app"
   }
 }
