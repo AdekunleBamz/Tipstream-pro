@@ -85,16 +85,14 @@ export function FarcasterProvider({ children }: { children: ReactNode }) {
   // Auto-connect to Farcaster wallet when inside Mini App
   useEffect(() => {
     const autoConnect = async () => {
-      if (isInFrame && isLoaded && !isConnected && ethProvider) {
+      if (isInFrame && isLoaded && !isConnected) {
         try {
-          // Request accounts from Farcaster wallet
-          const accounts = await ethProvider.request({ method: "eth_requestAccounts" });
-          if (accounts && accounts.length > 0) {
-            // Find injected connector and connect
-            const injectedConnector = connectors.find(c => c.id === "injected");
-            if (injectedConnector) {
-              connect({ connector: injectedConnector });
-            }
+          // Find the Farcaster Frame connector specifically
+          const farcasterConnector = connectors.find(
+            c => c.id === "farcasterFrame" || c.name.toLowerCase().includes("farcaster")
+          );
+          if (farcasterConnector) {
+            connect({ connector: farcasterConnector });
           }
         } catch (error) {
           console.log("Auto-connect failed:", error);
@@ -103,7 +101,7 @@ export function FarcasterProvider({ children }: { children: ReactNode }) {
     };
 
     autoConnect();
-  }, [isInFrame, isLoaded, isConnected, ethProvider, connect, connectors]);
+  }, [isInFrame, isLoaded, isConnected, connect, connectors]);
 
   const openUrl = useCallback((url: string) => {
     if (isInFrame) {
@@ -120,26 +118,27 @@ export function FarcasterProvider({ children }: { children: ReactNode }) {
   }, [isInFrame]);
 
   const connectWallet = useCallback(async () => {
-    if (isInFrame && ethProvider) {
+    if (isInFrame) {
       try {
-        const accounts = await ethProvider.request({ method: "eth_requestAccounts" });
-        if (accounts && accounts.length > 0) {
-          const injectedConnector = connectors.find(c => c.id === "injected");
-          if (injectedConnector) {
-            connect({ connector: injectedConnector });
-          }
+        // Use Farcaster Frame connector when in Mini App
+        const farcasterConnector = connectors.find(
+          c => c.id === "farcasterFrame" || c.name.toLowerCase().includes("farcaster")
+        );
+        if (farcasterConnector) {
+          connect({ connector: farcasterConnector });
+          return;
         }
       } catch (error) {
         console.error("Failed to connect Farcaster wallet:", error);
       }
-    } else {
-      // Fall back to first available connector
-      const connector = connectors[0];
-      if (connector) {
-        connect({ connector });
-      }
     }
-  }, [isInFrame, ethProvider, connect, connectors]);
+    
+    // Fall back to first available connector
+    const connector = connectors[0];
+    if (connector) {
+      connect({ connector });
+    }
+  }, [isInFrame, connect, connectors]);
 
   return (
     <FarcasterContext.Provider value={{ 

@@ -5,8 +5,10 @@ import { useAccount, useWriteContract, useWaitForTransactionReceipt, useConnect 
 import { parseEther } from "viem";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { CONTRACTS, PLATFORM_FEE } from "@/config/contracts";
-import { TipStreamABI } from "@/config/abis";
+import { TipStreamABI, DailyCheckInABI, SubscriptionManagerABI } from "@/config/abis";
 import { useFarcaster } from "@/providers/FarcasterProvider";
+
+type Tab = "tip" | "checkin" | "subscribe";
 
 const QUICK_AMOUNTS = [
   { label: "0.0001", value: "0.0001", emoji: "☕" },
@@ -23,6 +25,8 @@ export default function FrameTipPage() {
   const [amount, setAmount] = useState("0.001");
   const [note, setNote] = useState("");
   const [isConnecting, setIsConnecting] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>("tip");
+  const [subscriptionTier, setSubscriptionTier] = useState(1);
 
   const { data: hash, writeContract, isPending, error } = useWriteContract();
 
@@ -94,6 +98,29 @@ export default function FrameTipPage() {
     });
   };
 
+  const handleCheckIn = async () => {
+    writeContract({
+      address: CONTRACTS.DailyCheckIn,
+      abi: DailyCheckInABI,
+      functionName: "checkIn",
+    });
+  };
+
+  const handleSubscribe = async () => {
+    if (!creator) return;
+
+    const tierPrices = [parseEther("0.0002"), parseEther("0.0004"), parseEther("0.0006")];
+    const price = tierPrices[subscriptionTier - 1];
+
+    writeContract({
+      address: CONTRACTS.SubscriptionManager,
+      abi: SubscriptionManagerABI,
+      functionName: "subscribe",
+      args: [creator as `0x${string}`, BigInt(subscriptionTier)],
+      value: price,
+    });
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 p-4">
       <div className="max-w-md mx-auto">
@@ -115,6 +142,40 @@ export default function FrameTipPage() {
               {address.slice(0, 6)}...{address.slice(-4)}
             </p>
           )}
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="flex gap-2 mb-4 bg-gray-800/50 p-1 rounded-xl">
+          <button
+            onClick={() => setActiveTab("tip")}
+            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition ${
+              activeTab === "tip"
+                ? "bg-purple-500 text-white"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            💰 Tip
+          </button>
+          <button
+            onClick={() => setActiveTab("checkin")}
+            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition ${
+              activeTab === "checkin"
+                ? "bg-purple-500 text-white"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            ✅ Check-in
+          </button>
+          <button
+            onClick={() => setActiveTab("subscribe")}
+            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition ${
+              activeTab === "subscribe"
+                ? "bg-purple-500 text-white"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            ⭐ Subscribe
+          </button>
         </div>
 
         {/* Connect Wallet */}
@@ -161,77 +222,153 @@ export default function FrameTipPage() {
               </div>
             ) : (
               <>
-                {/* Creator Address */}
-                <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700">
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Creator Address
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="0x..."
-                    value={creator}
-                    onChange={(e) => setCreator(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
+                {/* TIP TAB */}
+                {activeTab === "tip" && (
+                  <>
+                    {/* Creator Address */}
+                    <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700">
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Creator Address
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="0x..."
+                        value={creator}
+                        onChange={(e) => setCreator(e.target.value)}
+                        className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
+                    </div>
 
-                {/* Quick Amounts */}
-                <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700">
-                  <label className="block text-sm font-medium text-gray-300 mb-3">
-                    Tip Amount (ETH)
-                  </label>
-                  <div className="grid grid-cols-4 gap-2 mb-3">
-                    {QUICK_AMOUNTS.map((qa) => (
-                      <button
-                        key={qa.value}
-                        onClick={() => setAmount(qa.value)}
-                        className={`p-3 rounded-xl border-2 transition text-center ${
-                          amount === qa.value
-                            ? "border-purple-500 bg-purple-500/20"
-                            : "border-gray-600 bg-gray-900 hover:border-gray-500"
-                        }`}
-                      >
-                        <span className="text-xl block">{qa.emoji}</span>
-                        <span className="text-xs text-gray-300">{qa.label}</span>
-                      </button>
-                    ))}
+                    {/* Quick Amounts */}
+                    <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700">
+                      <label className="block text-sm font-medium text-gray-300 mb-3">
+                        Tip Amount (ETH)
+                      </label>
+                      <div className="grid grid-cols-4 gap-2 mb-3">
+                        {QUICK_AMOUNTS.map((qa) => (
+                          <button
+                            key={qa.value}
+                            onClick={() => setAmount(qa.value)}
+                            className={`p-3 rounded-xl border-2 transition text-center ${
+                              amount === qa.value
+                                ? "border-purple-500 bg-purple-500/20"
+                                : "border-gray-600 bg-gray-900 hover:border-gray-500"
+                            }`}
+                          >
+                            <span className="text-xl block">{qa.emoji}</span>
+                            <span className="text-xs text-gray-300">{qa.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                      <input
+                        type="number"
+                        step="0.0001"
+                        min="0.0001"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        className="w-full px-4 py-2 bg-gray-900 border border-gray-600 rounded-xl text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
+                    </div>
+
+                    {/* Note */}
+                    <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700">
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Note (optional)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Great content! 🔥"
+                        value={note}
+                        onChange={(e) => setNote(e.target.value)}
+                        className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
+                    </div>
+
+                    {/* Send Button */}
+                    <button
+                      onClick={handleTip}
+                      disabled={!creator || isPending || isConfirming}
+                      className="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-2xl hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+                    >
+                      {isPending
+                        ? "Confirming..."
+                        : isConfirming
+                        ? "Sending..."
+                        : `Send ${amount} ETH 💰`}
+                    </button>
+                  </>
+                )}
+
+                {/* CHECK-IN TAB */}
+                {activeTab === "checkin" && (
+                  <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700 text-center">
+                    <span className="text-6xl mb-4 block">✅</span>
+                    <h2 className="text-xl font-bold text-white mb-2">Daily Check-in</h2>
+                    <p className="text-gray-400 text-sm mb-6">
+                      Check in daily to build your streak and earn rewards!
+                    </p>
+                    <button
+                      onClick={handleCheckIn}
+                      disabled={isPending || isConfirming}
+                      className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold rounded-2xl hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+                    >
+                      {isPending || isConfirming ? "Checking in..." : "Check In Now 🎯"}
+                    </button>
                   </div>
-                  <input
-                    type="number"
-                    step="0.0001"
-                    min="0.0001"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-900 border border-gray-600 rounded-xl text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
+                )}
 
-                {/* Note */}
-                <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700">
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Note (optional)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Great content! 🔥"
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
+                {/* SUBSCRIBE TAB */}
+                {activeTab === "subscribe" && (
+                  <>
+                    <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700">
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Creator Address
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="0x..."
+                        value={creator}
+                        onChange={(e) => setCreator(e.target.value)}
+                        className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
+                    </div>
 
-                {/* Send Button */}
-                <button
-                  onClick={handleTip}
-                  disabled={!creator || isPending || isConfirming}
-                  className="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-2xl hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed text-lg"
-                >
-                  {isPending
-                    ? "Confirming..."
-                    : isConfirming
-                    ? "Sending..."
-                    : `Send ${amount} ETH 💰`}
-                </button>
+                    <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700">
+                      <label className="block text-sm font-medium text-gray-300 mb-3">
+                        Subscription Tier
+                      </label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {[
+                          { tier: 1, name: "Bronze", price: "0.0002", emoji: "🥉" },
+                          { tier: 2, name: "Silver", price: "0.0004", emoji: "🥈" },
+                          { tier: 3, name: "Gold", price: "0.0006", emoji: "🥇" },
+                        ].map((t) => (
+                          <button
+                            key={t.tier}
+                            onClick={() => setSubscriptionTier(t.tier)}
+                            className={`p-3 rounded-xl border-2 transition text-center ${
+                              subscriptionTier === t.tier
+                                ? "border-purple-500 bg-purple-500/20"
+                                : "border-gray-600 bg-gray-900 hover:border-gray-500"
+                            }`}
+                          >
+                            <span className="text-2xl block">{t.emoji}</span>
+                            <span className="text-sm text-white block">{t.name}</span>
+                            <span className="text-xs text-gray-400">{t.price} ETH</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleSubscribe}
+                      disabled={!creator || isPending || isConfirming}
+                      className="w-full py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold rounded-2xl hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+                    >
+                      {isPending || isConfirming ? "Subscribing..." : "Subscribe ⭐"}
+                    </button>
+                  </>
+                )}
 
                 {/* Error Message */}
                 {error && (
