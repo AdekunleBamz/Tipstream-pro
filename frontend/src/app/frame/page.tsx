@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useConnect } from "wagmi";
 import { parseEther } from "viem";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { CONTRACTS, PLATFORM_FEE } from "@/config/contracts";
@@ -16,11 +16,13 @@ const QUICK_AMOUNTS = [
 ];
 
 export default function FrameTipPage() {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
+  const { connect, connectors } = useConnect();
   const { isInFrame, userFid, userName, close, isLoaded } = useFarcaster();
   const [creator, setCreator] = useState("");
   const [amount, setAmount] = useState("0.001");
   const [note, setNote] = useState("");
+  const [isConnecting, setIsConnecting] = useState(false);
 
   const { data: hash, writeContract, isPending, error } = useWriteContract();
 
@@ -28,14 +30,55 @@ export default function FrameTipPage() {
     hash,
   });
 
+  // Auto-connect to Farcaster wallet when in frame
+  useEffect(() => {
+    const autoConnectFarcaster = async () => {
+      if (isInFrame && isLoaded && !isConnected && !isConnecting) {
+        setIsConnecting(true);
+        try {
+          // Find the Farcaster Frame connector
+          const farcasterConnector = connectors.find(
+            (c) => c.id === "farcasterFrame" || c.name.toLowerCase().includes("farcaster")
+          );
+          if (farcasterConnector) {
+            connect({ connector: farcasterConnector });
+          }
+        } catch (error) {
+          console.log("Auto-connect failed:", error);
+        } finally {
+          setIsConnecting(false);
+        }
+      }
+    };
+
+    autoConnectFarcaster();
+  }, [isInFrame, isLoaded, isConnected, isConnecting, connect, connectors]);
+
   // Show loading state while initializing
-  if (!isLoaded) {
+  if (!isLoaded || isConnecting) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto mb-4"></div>
+          <p className="text-gray-400">Connecting to Farcaster...</p>
+        </div>
       </div>
     );
   }
+
+  const handleConnectWallet = () => {
+    // Try Farcaster connector first when in frame
+    if (isInFrame) {
+      const farcasterConnector = connectors.find(
+        (c) => c.id === "farcasterFrame" || c.name.toLowerCase().includes("farcaster")
+      );
+      if (farcasterConnector) {
+        connect({ connector: farcasterConnector });
+        return;
+      }
+    }
+    // Otherwise, use default RainbowKit behavior (handled by ConnectButton)
+  };
 
   const handleTip = async () => {
     if (!creator || !amount) return;
@@ -67,13 +110,27 @@ export default function FrameTipPage() {
               Welcome, @{userName}! 👋
             </p>
           )}
+          {isConnected && address && (
+            <p className="text-gray-500 text-xs mt-1 font-mono">
+              {address.slice(0, 6)}...{address.slice(-4)}
+            </p>
+          )}
         </div>
 
         {/* Connect Wallet */}
         {!isConnected ? (
           <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700 text-center">
             <p className="text-gray-400 mb-4">Connect your wallet to send tips</p>
-            <ConnectButton />
+            {isInFrame ? (
+              <button
+                onClick={handleConnectWallet}
+                className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl hover:opacity-90 transition"
+              >
+                🟣 Connect Farcaster Wallet
+              </button>
+            ) : (
+              <ConnectButton />
+            )}
           </div>
         ) : (
           <div className="space-y-4">
