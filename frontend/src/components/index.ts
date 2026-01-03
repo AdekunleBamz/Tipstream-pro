@@ -13,3 +13,4 @@ export { SuccessMessage } from "./SuccessMessage";
 export { TransactionHistory } from "./TransactionHistory";
 export { FeatureCard } from "./FeatureCard";
 export { FeaturesSection } from "./FeaturesSection";
+export { CreatorDashboard } from "./CreatorDashboard";

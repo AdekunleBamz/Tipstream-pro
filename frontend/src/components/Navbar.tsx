@@ -9,6 +9,7 @@ const navLinks = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/tip", label: "Tip" },
   { href: "/subscribe", label: "Subscribe" },
+  { href: "/creator", label: "Creator" },
   { href: "/checkin", label: "Check-In" },
   { href: "/gallery", label: "My NFTs" },
 ];

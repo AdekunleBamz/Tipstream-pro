@@ -3,14 +3,8 @@
 import { useState } from "react";
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { parseEther } from "viem";
-import { CONTRACTS } from "@/config/contracts";
+import { CONTRACTS, SUBSCRIPTION_TIERS } from "@/config/contracts";
 import { SubscriptionManagerABI } from "@/config/abis";
-
-const SUBSCRIPTION_TIERS = [
-  { id: 0, name: "Basic", price: "0.01", period: 30, emoji: "⭐" },
-  { id: 1, name: "Pro", price: "0.05", period: 30, emoji: "💎" },
-  { id: 2, name: "VIP", price: "0.1", period: 30, emoji: "👑" },
-];
 
 export function SubscriptionForm() {
   const { address, isConnected } = useAccount();
@@ -41,7 +35,7 @@ export function SubscriptionForm() {
       abi: SubscriptionManagerABI,
       functionName: "subscribe",
       args: [creator as `0x${string}`, BigInt(selectedTier)],
-      value: parseEther(tier.price),
+      value: tier.price,
     });
   };
 
@@ -89,7 +83,7 @@ export function SubscriptionForm() {
             >
               <div className="text-2xl mb-2">{tier.emoji}</div>
               <div className="font-bold text-white">{tier.name}</div>
-              <div className="text-sm text-purple-400">{tier.price} ETH</div>
+              <div className="text-sm text-purple-400">{tier.priceStr} ETH</div>
               <div className="text-xs text-gray-500">{tier.period} days</div>
             </button>
           ))}
@@ -113,7 +107,7 @@ export function SubscriptionForm() {
           ? "Confirming..."
           : isConfirming
           ? "Processing..."
-          : `Subscribe for ${SUBSCRIPTION_TIERS[selectedTier].price} ETH`}
+          : `Subscribe for ${SUBSCRIPTION_TIERS[selectedTier].priceStr} ETH`}
       </button>
 
       {/* Success Message */}

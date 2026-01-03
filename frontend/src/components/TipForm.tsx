@@ -25,7 +25,7 @@ export function TipForm() {
 
     const tipAmount = parseEther(amount);
     if (tipAmount < MIN_TIP_AMOUNT) {
-      alert("Minimum tip is 0.001 ETH");
+      alert("Minimum tip is 0.0001 ETH");
       return;
     }
 
@@ -70,16 +70,16 @@ export function TipForm() {
         </label>
         <input
           type="number"
-          step="0.001"
-          min="0.001"
-          placeholder="0.001"
+          step="0.0001"
+          min="0.0001"
+          placeholder="0.0001"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
           required
         />
         <p className="text-xs text-gray-500 mt-1">
-          + 0.0001 ETH platform fee
+          + 0.00001 ETH platform fee
         </p>
       </div>
 

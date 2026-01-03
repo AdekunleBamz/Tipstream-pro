@@ -6,11 +6,18 @@ export const CONTRACTS = {
   DailyCheckIn: "0x30fa4DE1205AFDe0F00Cee051c5c3dA8Dc3C7Ef8" as `0x${string}`,
 } as const;
 
-// Platform fee in wei (0.0001 ETH)
-export const PLATFORM_FEE = BigInt("100000000000000");
+// Platform fee in wei (0.00001 ETH)
+export const PLATFORM_FEE = BigInt("10000000000000");
 
-// Minimum tip amount in wei (0.001 ETH)
-export const MIN_TIP_AMOUNT = BigInt("1000000000000000");
+// Minimum tip amount in wei (0.0001 ETH)
+export const MIN_TIP_AMOUNT = BigInt("100000000000000");
+
+// Subscription tier prices in wei
+export const SUBSCRIPTION_TIERS = [
+  { id: 0, name: "Basic", price: BigInt("200000000000000"), priceStr: "0.0002", period: 30, emoji: "⭐" },
+  { id: 1, name: "Pro", price: BigInt("400000000000000"), priceStr: "0.0004", period: 30, emoji: "💎" },
+  { id: 2, name: "VIP", price: BigInt("600000000000000"), priceStr: "0.0006", period: 30, emoji: "👑" },
+];
 
 // Base Chain ID
 export const BASE_CHAIN_ID = 8453;

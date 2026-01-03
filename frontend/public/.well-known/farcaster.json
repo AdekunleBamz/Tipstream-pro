@@ -1,0 +1,18 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjAsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwIn0",
+    "payload": "eyJkb21haW4iOiJ0aXBzdHJlYW0tcHJvLnZlcmNlbC5hcHAifQ",
+    "signature": "MHgwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw"
+  },
+  "frame": {
+    "version": "1",
+    "name": "TipStream Pro",
+    "iconUrl": "https://tipstream-pro.vercel.app/api/og",
+    "homeUrl": "https://tipstream-pro.vercel.app/frame",
+    "imageUrl": "https://tipstream-pro.vercel.app/api/og",
+    "buttonTitle": "💰 Send Tip",
+    "splashImageUrl": "https://tipstream-pro.vercel.app/api/og",
+    "splashBackgroundColor": "#1a1a2e",
+    "webhookUrl": "https://tipstream-pro.vercel.app/api/webhook"
+  }
+}
