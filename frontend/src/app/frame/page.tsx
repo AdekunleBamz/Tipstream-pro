@@ -7,6 +7,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { CONTRACTS, PLATFORM_FEE } from "@/config/contracts";
 import { TipStreamABI, DailyCheckInABI, SubscriptionManagerABI } from "@/config/abis";
 import { useFarcaster } from "@/providers/FarcasterProvider";
+import { farcasterFrame } from "@farcaster/frame-wagmi-connector";
 
 type Tab = "tip" | "checkin" | "subscribe";
 
@@ -19,8 +20,8 @@ const QUICK_AMOUNTS = [
 
 export default function FrameTipPage() {
   const { isConnected, address } = useAccount();
-  const { connect, connectors } = useConnect();
-  const { isInFrame, userFid, userName, close, isLoaded } = useFarcaster();
+  const { connect } = useConnect();
+  const { isInFrame, userName, close, isLoaded } = useFarcaster();
   const [creator, setCreator] = useState("");
   const [amount, setAmount] = useState("0.001");
   const [note, setNote] = useState("");
@@ -40,23 +41,18 @@ export default function FrameTipPage() {
       if (isInFrame && isLoaded && !isConnected && !isConnecting) {
         setIsConnecting(true);
         try {
-          // Find the Farcaster Frame connector
-          const farcasterConnector = connectors.find(
-            (c) => c.id === "farcasterFrame" || c.name.toLowerCase().includes("farcaster")
-          );
-          if (farcasterConnector) {
-            connect({ connector: farcasterConnector });
-          }
+          // Use inline connector as per Farcaster docs
+          connect({ connector: farcasterFrame() });
         } catch (error) {
           console.log("Auto-connect failed:", error);
         } finally {
-          setIsConnecting(false);
+          setTimeout(() => setIsConnecting(false), 2000);
         }
       }
     };
 
     autoConnectFarcaster();
-  }, [isInFrame, isLoaded, isConnected, isConnecting, connect, connectors]);
+  }, [isInFrame, isLoaded, isConnected, isConnecting, connect]);
 
   // Show loading state while initializing
   if (!isLoaded || isConnecting) {
@@ -71,25 +67,8 @@ export default function FrameTipPage() {
   }
 
   const handleConnectWallet = () => {
-    console.log("handleConnectWallet called, isInFrame:", isInFrame);
-    console.log("Available connectors:", connectors.map(c => ({ id: c.id, name: c.name })));
-    
-    // Try Farcaster connector first when in frame
-    const farcasterConnector = connectors.find(
-      (c) => c.id === "farcasterFrame" || c.id.includes("farcaster") || c.name.toLowerCase().includes("farcaster")
-    );
-    
-    if (farcasterConnector) {
-      console.log("Using Farcaster connector:", farcasterConnector.id);
-      connect({ connector: farcasterConnector });
-      return;
-    }
-    
-    // Fallback to first available connector
-    if (connectors.length > 0) {
-      console.log("Using fallback connector:", connectors[0].id);
-      connect({ connector: connectors[0] });
-    }
+    // Use inline connector as per Farcaster docs
+    connect({ connector: farcasterFrame() });
   };
 
   const handleTip = async () => {

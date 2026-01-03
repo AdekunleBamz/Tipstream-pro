@@ -2,7 +2,8 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
 import sdk from "@farcaster/miniapp-sdk";
-import { useConnect, useAccount, useDisconnect } from "wagmi";
+import { useConnect, useAccount } from "wagmi";
+import { farcasterFrame } from "@farcaster/frame-wagmi-connector";
 
 // Define the context type based on what the SDK returns
 type FrameContextType = Awaited<typeof sdk.context>;
@@ -45,9 +46,8 @@ export function FarcasterProvider({ children }: { children: ReactNode }) {
   const [userName, setUserName] = useState<string | null>(null);
   const [ethProvider, setEthProvider] = useState<typeof sdk.wallet.ethProvider | null>(null);
 
-  const { connect, connectors } = useConnect();
+  const { connect } = useConnect();
   const { isConnected } = useAccount();
-  const { disconnect } = useDisconnect();
 
   useEffect(() => {
     const init = async () => {
@@ -87,13 +87,8 @@ export function FarcasterProvider({ children }: { children: ReactNode }) {
     const autoConnect = async () => {
       if (isInFrame && isLoaded && !isConnected) {
         try {
-          // Find the Farcaster Frame connector specifically
-          const farcasterConnector = connectors.find(
-            c => c.id === "farcasterFrame" || c.name.toLowerCase().includes("farcaster")
-          );
-          if (farcasterConnector) {
-            connect({ connector: farcasterConnector });
-          }
+          // Use inline connector as per Farcaster docs
+          connect({ connector: farcasterFrame() });
         } catch (error) {
           console.log("Auto-connect failed:", error);
         }
@@ -101,7 +96,7 @@ export function FarcasterProvider({ children }: { children: ReactNode }) {
     };
 
     autoConnect();
-  }, [isInFrame, isLoaded, isConnected, connect, connectors]);
+  }, [isInFrame, isLoaded, isConnected, connect]);
 
   const openUrl = useCallback((url: string) => {
     if (isInFrame) {
@@ -118,27 +113,9 @@ export function FarcasterProvider({ children }: { children: ReactNode }) {
   }, [isInFrame]);
 
   const connectWallet = useCallback(async () => {
-    if (isInFrame) {
-      try {
-        // Use Farcaster Frame connector when in Mini App
-        const farcasterConnector = connectors.find(
-          c => c.id === "farcasterFrame" || c.name.toLowerCase().includes("farcaster")
-        );
-        if (farcasterConnector) {
-          connect({ connector: farcasterConnector });
-          return;
-        }
-      } catch (error) {
-        console.error("Failed to connect Farcaster wallet:", error);
-      }
-    }
-    
-    // Fall back to first available connector
-    const connector = connectors[0];
-    if (connector) {
-      connect({ connector });
-    }
-  }, [isInFrame, connect, connectors]);
+    // Use inline connector as per Farcaster docs
+    connect({ connector: farcasterFrame() });
+  }, [connect]);
 
   return (
     <FarcasterContext.Provider value={{ 
