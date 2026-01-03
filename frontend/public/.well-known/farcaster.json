@@ -18,10 +18,11 @@
     "webhookUrl": "https://tipstream-pro.vercel.app/api/webhook",
     "heroImageUrl": "https://tipstream-pro.vercel.app/hero.png",
     "tagline": "Tip Creators, Earn NFTs",
-    "ogTitle": "TipStream Pro - Tip Creators on Base",
+    "ogTitle": "TipStream Pro",
     "ogDescription": "Send tips to your favorite creators on Base blockchain with NFT receipts.",
     "ogImageUrl": "https://tipstream-pro.vercel.app/og-image.png",
     "primaryCategory": "finance",
-    "tags": ["tipping", "base", "crypto", "nft", "creators"]
+    "tags": ["tipping", "base", "crypto", "nft", "creators"],
+    "castShareUrl": "https://tipstream-pro.vercel.app"
   }
 }
