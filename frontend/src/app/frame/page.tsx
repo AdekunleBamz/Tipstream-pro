@@ -71,17 +71,25 @@ export default function FrameTipPage() {
   }
 
   const handleConnectWallet = () => {
+    console.log("handleConnectWallet called, isInFrame:", isInFrame);
+    console.log("Available connectors:", connectors.map(c => ({ id: c.id, name: c.name })));
+    
     // Try Farcaster connector first when in frame
-    if (isInFrame) {
-      const farcasterConnector = connectors.find(
-        (c) => c.id === "farcasterFrame" || c.name.toLowerCase().includes("farcaster")
-      );
-      if (farcasterConnector) {
-        connect({ connector: farcasterConnector });
-        return;
-      }
+    const farcasterConnector = connectors.find(
+      (c) => c.id === "farcasterFrame" || c.id.includes("farcaster") || c.name.toLowerCase().includes("farcaster")
+    );
+    
+    if (farcasterConnector) {
+      console.log("Using Farcaster connector:", farcasterConnector.id);
+      connect({ connector: farcasterConnector });
+      return;
     }
-    // Otherwise, use default RainbowKit behavior (handled by ConnectButton)
+    
+    // Fallback to first available connector
+    if (connectors.length > 0) {
+      console.log("Using fallback connector:", connectors[0].id);
+      connect({ connector: connectors[0] });
+    }
   };
 
   const handleTip = async () => {
@@ -181,16 +189,18 @@ export default function FrameTipPage() {
         {/* Connect Wallet */}
         {!isConnected ? (
           <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700 text-center">
-            <p className="text-gray-400 mb-4">Connect your wallet to send tips</p>
-            {isInFrame ? (
-              <button
-                onClick={handleConnectWallet}
-                className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl hover:opacity-90 transition"
-              >
-                🟣 Connect Farcaster Wallet
-              </button>
-            ) : (
-              <ConnectButton />
+            <p className="text-gray-400 mb-4">Connect your wallet to get started</p>
+            <button
+              onClick={handleConnectWallet}
+              className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl hover:opacity-90 transition mb-3"
+            >
+              🟣 Connect Wallet
+            </button>
+            {!isInFrame && (
+              <div className="mt-3">
+                <p className="text-gray-500 text-xs mb-2">Or use:</p>
+                <ConnectButton />
+              </div>
             )}
           </div>
         ) : (
