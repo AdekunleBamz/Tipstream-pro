@@ -1,0 +1,80 @@
+/**
+ * Jest Setup
+ * 
+ * Global setup for Jest tests.
+ */
+
+import '@testing-library/jest-dom';
+
+// Mock window.matchMedia
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
+
+// Mock IntersectionObserver
+class MockIntersectionObserver {
+  observe = jest.fn();
+  disconnect = jest.fn();
+  unobserve = jest.fn();
+}
+
+Object.defineProperty(window, 'IntersectionObserver', {
+  writable: true,
+  value: MockIntersectionObserver,
+});
+
+// Mock ResizeObserver
+class MockResizeObserver {
+  observe = jest.fn();
+  disconnect = jest.fn();
+  unobserve = jest.fn();
+}
+
+Object.defineProperty(window, 'ResizeObserver', {
+  writable: true,
+  value: MockResizeObserver,
+});
+
+// Mock scrollTo
+Object.defineProperty(window, 'scrollTo', {
+  writable: true,
+  value: jest.fn(),
+});
+
+// Mock clipboard API
+Object.defineProperty(navigator, 'clipboard', {
+  writable: true,
+  value: {
+    writeText: jest.fn().mockResolvedValue(undefined),
+    readText: jest.fn().mockResolvedValue(''),
+  },
+});
+
+// Suppress console errors during tests (optional)
+const originalError = console.error;
+beforeAll(() => {
+  console.error = (...args: unknown[]) => {
+    // Suppress React 18 warnings about act()
+    if (
+      typeof args[0] === 'string' &&
+      args[0].includes('Warning: ReactDOM.render is no longer supported')
+    ) {
+      return;
+    }
+    originalError.call(console, ...args);
+  };
+});
+
+afterAll(() => {
+  console.error = originalError;
+});
