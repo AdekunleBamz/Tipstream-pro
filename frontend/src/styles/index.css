@@ -1,0 +1,20 @@
+/**
+ * TipStream Pro Styles
+ * 
+ * Central import point for all custom styles.
+ * Import this file in your layout or global CSS.
+ */
+
+/* Base styles */
+@import './colors.css';
+@import './typography.css';
+@import './animations.css';
+
+/**
+ * Usage:
+ * 
+ * In your layout.tsx or globals.css:
+ * @import './styles/index.css';
+ * 
+ * Or import individual files as needed.
+ */
