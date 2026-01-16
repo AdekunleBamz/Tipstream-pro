@@ -1,4 +1,8 @@
 // Core application types
+// Re-export all types from the types directory
+export * from './events';
+export * from './api';
+export * from './components';
 
 export interface Creator {
   address: `0x${string}`;
