@@ -44,3 +44,45 @@ export function formatTimeAgo(timestamp: number): string {
   
   return formatDate(timestamp);
 }
+
+export function formatCurrency(amount: number, currency: string = 'USD'): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
+export function formatPercentage(value: number, decimals: number = 1): string {
+  return `${(value * 100).toFixed(decimals)}%`;
+}
+
+export function formatCompactNumber(num: number): string {
+  return new Intl.NumberFormat('en-US', {
+    notation: 'compact',
+    compactDisplay: 'short',
+  }).format(num);
+}
+
+export function formatOrdinal(n: number): string {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+export function formatDuration(seconds: number): string {
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
+}
+
+export function formatStreakDays(streak: number): string {
+  if (streak === 0) return 'No streak';
+  if (streak === 1) return '1 day';
+  return `${streak} days`;
+}
