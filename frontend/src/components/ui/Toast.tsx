@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';
@@ -40,12 +40,12 @@ interface ToastProviderProps {
 }
 
 const positionStyles = {
-  'top-right': 'top-4 right-4',
-  'top-left': 'top-4 left-4',
-  'bottom-right': 'bottom-4 right-4',
-  'bottom-left': 'bottom-4 left-4',
-  'top-center': 'top-4 left-1/2 -translate-x-1/2',
-  'bottom-center': 'bottom-4 left-1/2 -translate-x-1/2',
+  'top-right': 'top-4 right-4 items-end',
+  'top-left': 'top-4 left-4 items-start',
+  'bottom-right': 'bottom-4 right-4 items-end',
+  'bottom-left': 'bottom-4 left-4 items-start',
+  'top-center': 'top-4 left-1/2 -translate-x-1/2 items-center',
+  'bottom-center': 'bottom-4 left-1/2 -translate-x-1/2 items-center',
 };
 
 export function ToastProvider({
@@ -62,19 +62,16 @@ export function ToastProvider({
   const addToast = useCallback(
     (toast: Omit<Toast, 'id'>) => {
       const id = `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      const duration = toast.duration ?? 5000;
 
       setToasts((prev) => {
         const newToasts = [...prev, { ...toast, id }];
-        // Keep only the last maxToasts
-        return newToasts.slice(-maxToasts);
+        if (newToasts.length > maxToasts) {
+          return newToasts.slice(-maxToasts);
+        }
+        return newToasts;
       });
-
-      if (duration > 0) {
-        setTimeout(() => removeToast(id), duration);
-      }
     },
-    [maxToasts, removeToast]
+    [maxToasts]
   );
 
   const success = useCallback(
@@ -103,7 +100,7 @@ export function ToastProvider({
       {typeof window !== 'undefined' &&
         createPortal(
           <div
-            className={`fixed z-[100] flex flex-col gap-2 ${positionStyles[position]}`}
+            className={`fixed z-[100] flex flex-col gap-3 pointer-events-none ${positionStyles[position]}`}
             aria-live="polite"
           >
             {toasts.map((toast) => (
@@ -122,79 +119,116 @@ interface ToastItemProps {
   onClose: () => void;
 }
 
-const typeStyles: Record<ToastType, { bg: string; icon: ReactNode; border: string }> = {
+const typeStyles: Record<ToastType, { bg: string; icon: ReactNode; border: string; progress: string }> = {
   success: {
-    bg: 'bg-green-900/90',
-    border: 'border-green-500/30',
+    bg: 'bg-gray-900',
+    border: 'border-green-500/50',
+    progress: 'bg-green-500',
     icon: (
-      <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-      </svg>
+      <div className="w-8 h-8 bg-green-900/50 rounded-full flex items-center justify-center border border-green-500/30">
+        <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
     ),
   },
   error: {
-    bg: 'bg-red-900/90',
-    border: 'border-red-500/30',
+    bg: 'bg-gray-900',
+    border: 'border-red-500/50',
+    progress: 'bg-red-500',
     icon: (
-      <svg className="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-      </svg>
+      <div className="w-8 h-8 bg-red-900/50 rounded-full flex items-center justify-center border border-red-500/30">
+        <svg className="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </div>
     ),
   },
   warning: {
-    bg: 'bg-yellow-900/90',
-    border: 'border-yellow-500/30',
+    bg: 'bg-gray-900',
+    border: 'border-yellow-500/50',
+    progress: 'bg-yellow-500',
     icon: (
-      <svg className="w-5 h-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-        />
-      </svg>
+      <div className="w-8 h-8 bg-yellow-900/50 rounded-full flex items-center justify-center border border-yellow-500/30">
+        <svg className="w-5 h-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
     ),
   },
   info: {
-    bg: 'bg-blue-900/90',
-    border: 'border-blue-500/30',
+    bg: 'bg-gray-900',
+    border: 'border-blue-500/50',
+    progress: 'bg-blue-500',
     icon: (
-      <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
+      <div className="w-8 h-8 bg-blue-900/50 rounded-full flex items-center justify-center border border-blue-500/30">
+        <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
     ),
   },
 };
 
 function ToastItem({ toast, onClose }: ToastItemProps) {
   const styles = typeStyles[toast.type];
+  const duration = toast.duration ?? 5000;
+  const [isExiting, setIsExiting] = useState(false);
+  const [progress, setProgress] = useState(100);
+
+  useEffect(() => {
+    if (duration > 0) {
+      const startTime = Date.now();
+      const endTime = startTime + duration;
+
+      const timer = setInterval(() => {
+        const now = Date.now();
+        const remaining = Math.max(0, endTime - now);
+        const percent = (remaining / duration) * 100;
+
+        setProgress(percent);
+
+        if (remaining === 0) {
+          clearInterval(timer);
+          handleClose();
+        }
+      }, 10);
+
+      return () => clearInterval(timer);
+    }
+  }, [duration, toast.id]);
+
+  const handleClose = () => {
+    setIsExiting(true);
+    setTimeout(onClose, 300); // Match animation duration
+  };
 
   return (
     <div
       className={`
-        min-w-[320px] max-w-md p-4 rounded-lg shadow-lg
-        border backdrop-blur-sm
-        ${styles.bg} ${styles.border}
-        animate-in slide-in-from-right fade-in duration-300
+        pointer-events-auto
+        min-w-[340px] max-w-md p-4 rounded-xl shadow-2xl
+        border backdrop-blur-xl relative overflow-hidden
+        ${styles.bg}/90 ${styles.border}
+        transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
+        ${isExiting
+          ? 'opacity-0 translate-x-12 scale-95'
+          : 'opacity-100 translate-x-0 scale-100 animate-slide-in-right'
+        }
       `}
       role="alert"
     >
-      <div className="flex items-start gap-3">
-        <div className="flex-shrink-0">{styles.icon}</div>
-        <div className="flex-1 min-w-0">
-          <p className="text-white font-medium">{toast.title}</p>
+      <div className="flex items-start gap-4">
+        <div className="flex-shrink-0 animate-bounce-subtle">{styles.icon}</div>
+        <div className="flex-1 min-w-0 pt-0.5">
+          <p className="text-white font-semibold tracking-wide">{toast.title}</p>
           {toast.message && (
-            <p className="text-gray-300 text-sm mt-1">{toast.message}</p>
+            <p className="text-gray-300 text-sm mt-1 leading-relaxed">{toast.message}</p>
           )}
         </div>
         <button
-          onClick={onClose}
-          className="flex-shrink-0 text-gray-400 hover:text-white transition-colors"
+          onClick={handleClose}
+          className="flex-shrink-0 text-gray-500 hover:text-white transition-colors p-1 hover:bg-white/10 rounded-lg"
           aria-label="Close notification"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -202,6 +236,16 @@ function ToastItem({ toast, onClose }: ToastItemProps) {
           </svg>
         </button>
       </div>
+
+      {/* Progress Bar */}
+      {duration > 0 && (
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-800">
+          <div
+            className={`h-full ${styles.progress} transition-all duration-100 ease-linear`}
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      )}
     </div>
   );
 }

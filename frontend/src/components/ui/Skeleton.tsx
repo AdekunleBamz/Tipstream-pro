@@ -3,9 +3,10 @@
 interface SkeletonProps {
   width?: string | number;
   height?: string | number;
-  rounded?: 'none' | 'sm' | 'md' | 'lg' | 'full';
+  rounded?: 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
   className?: string;
-  animate?: boolean;
+  variant?: 'pulse' | 'shimmer';
+  animationSpeed?: 'slow' | 'normal' | 'fast';
 }
 
 const roundedStyles = {
@@ -13,7 +14,14 @@ const roundedStyles = {
   sm: 'rounded-sm',
   md: 'rounded-md',
   lg: 'rounded-lg',
+  xl: 'rounded-xl',
+  '2xl': 'rounded-2xl',
   full: 'rounded-full',
+};
+
+const animationStyles = {
+  pulse: 'animate-pulse',
+  shimmer: 'animate-shimmer relative overflow-hidden',
 };
 
 export function Skeleton({
@@ -21,7 +29,7 @@ export function Skeleton({
   height,
   rounded = 'md',
   className = '',
-  animate = true,
+  variant = 'shimmer',
 }: SkeletonProps) {
   const widthStyle = typeof width === 'number' ? `${width}px` : width;
   const heightStyle = typeof height === 'number' ? `${height}px` : height;
@@ -29,8 +37,8 @@ export function Skeleton({
   return (
     <div
       className={`
-        bg-gray-700
-        ${animate ? 'animate-pulse' : ''}
+        bg-gray-800/50
+        ${animationStyles[variant]}
         ${roundedStyles[rounded]}
         ${className}
       `}
@@ -53,7 +61,7 @@ interface SkeletonTextProps {
 
 export function SkeletonText({ lines = 3, className = '' }: SkeletonTextProps) {
   return (
-    <div className={`space-y-2 ${className}`}>
+    <div className={`space-y-3 ${className}`}>
       {Array.from({ length: lines }).map((_, index) => (
         <Skeleton
           key={index}
@@ -70,15 +78,17 @@ export function SkeletonText({ lines = 3, className = '' }: SkeletonTextProps) {
  * Skeleton Avatar - circular avatar placeholder
  */
 interface SkeletonAvatarProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   className?: string;
 }
 
 const avatarSizes = {
+  xs: 24,
   sm: 32,
   md: 40,
   lg: 48,
   xl: 64,
+  '2xl': 96,
 };
 
 export function SkeletonAvatar({ size = 'md', className = '' }: SkeletonAvatarProps) {
@@ -105,15 +115,15 @@ export function SkeletonCard({ hasImage = false, className = '' }: SkeletonCardP
   return (
     <div
       className={`
-        bg-gray-800/50 border border-gray-700
+        bg-gray-800/20 border border-gray-700/50
         rounded-xl p-6 space-y-4
         ${className}
       `}
     >
       {hasImage && (
-        <Skeleton height={160} rounded="lg" />
+        <Skeleton height={160} rounded="lg" className="mb-4" />
       )}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         <SkeletonAvatar size="md" />
         <div className="flex-1 space-y-2">
           <Skeleton height={16} width="50%" />
@@ -135,12 +145,12 @@ interface SkeletonTableRowProps {
 
 export function SkeletonTableRow({ columns = 4, className = '' }: SkeletonTableRowProps) {
   return (
-    <div className={`flex gap-4 py-4 border-b border-gray-700 ${className}`}>
+    <div className={`flex gap-4 py-4 border-b border-gray-700/50 ${className}`}>
       {Array.from({ length: columns }).map((_, index) => (
         <Skeleton
           key={index}
           height={16}
-          className="flex-1"
+          className="flex-1 opacity-50"
           rounded="sm"
         />
       ))}
